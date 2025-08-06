@@ -2558,6 +2558,7 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
                     desc="Capturing CUDA graph shapes")
             for num_tokens in compilation_cases:
                 # We skip EPLB here since we don't want to record dummy metrics
+                start_time_uniq = time.perf_counter()
                 for _ in range(
                         self.compilation_config.cudagraph_num_of_warmups):
                     self._dummy_run(num_tokens,
@@ -2566,13 +2567,17 @@ class GPUModelRunner(LoRAModelRunnerMixin, KVConnectorModelRunnerMixin):
                 self._dummy_run(num_tokens,
                                 capture_attn_cudagraph=full_cg,
                                 skip_eplb=True)
+                end_time_uniq = time.perf_counter()
+                elapsed_time_uniq = end_time_uniq - start_time_uniq
+                logger.debug("DIEGO: CUDAGraph finished in %.3f secs for %d case",
+                    elapsed_time_uniq, num_tokens)
 
         end_time = time.perf_counter()
         end_free_gpu_memory = torch.cuda.mem_get_info()[0]
         elapsed_time = end_time - start_time
         cuda_graph_size = start_free_gpu_memory - end_free_gpu_memory
         # This usually takes 5~20 seconds.
-        logger.info("Graph capturing finished in %.0f secs, took %.2f GiB",
+        logger.info("Graph capturing finished in %.3f secs, took %.2f GiB",
                     elapsed_time, cuda_graph_size / (1 << 30))
 
     def _initialize_single_attn_backend(
