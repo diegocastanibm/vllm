@@ -28,7 +28,7 @@ or a 8B parameters using:
 or a 8B parameters using:
 >> python3 vllm/benchmarks/benchmark_serving.py --backend vllm --model meta-llama/Llama-3.2-1B --endpoint /v1/completions --dataset-name sharegpt --dataset-path ShareGPT_V3_unfiltered_cleaned_split.json --num-prompts 10
 
-Also, there is a new version of using 
+Also, there is a new version of using
 >> vllm bench serve --backend vllm --model meta-llama/Llama-3.2-1B --endpoint /v1/completions --dataset-name sharegpt --dataset-path ShareGPT_V3_unfiltered_cleaned_split.json --num-prompts 10
 
 If you need to download the dataset (shareGPT) do:
@@ -41,7 +41,7 @@ pip install vllm[bench]
 # Install development environment (in pod, but pre-commit has been also installed in my mac)
 
 1- Install UV:
->> curl -LsSf https://astral.sh/uv/install.sh | sh
+>> curl -LsSf <https://astral.sh/uv/install.sh> | sh
 
 2- New venv
 >> uv venv --python 3.12 --seed
@@ -71,5 +71,11 @@ Run tests for a single test file with detailed output
 >> pre-commit
 
 5- To run just pre-commit with a hook do:
->> pre-commit run <hook_id> 
+>> pre-commit run <hook_id>
 Check list in .pre-commit-config.yaml
+
+# How to call the preocess after the flag adition
+
+>> VLLM_LOGGING_LEVEL=DEBUG vllm serve meta-llama/Llama-3.1-8B-Instruct --compilation-config '{"use_cudagraph_delayed_capture": true}'
+
+>> vllm bench serve --backend vllm --model meta-llama/Llama-3.1-8B-Instruct --endpoint /v1/completions --dataset-name sharegpt --dataset-path ShareGPT_V3_unfiltered_cleaned_split.json --num-prompts 1000
